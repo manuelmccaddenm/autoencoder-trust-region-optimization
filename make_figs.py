@@ -12,29 +12,29 @@ FIGS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "figs")
 os.makedirs(FIGS, exist_ok=True)
 plt.rcParams.update({"font.size": 10, "figure.dpi": 130})
 
-_VISTA = dict(elev=22, azim=-60)
-_LIMITES = dict(xlim=(-1.0, 1.0), ylim=(-2.5, 2.5), zlim=(-1.5, 1.5))
+_VIEW = dict(elev=22, azim=-60)
+_LIMS = dict(xlim=(-1.0, 1.0), ylim=(-2.5, 2.5), zlim=(-1.5, 1.5))
 
 
-def _aplicar_ejes(ax):
-    ax.view_init(**_VISTA)
-    ax.set_xlim(_LIMITES["xlim"]); ax.set_ylim(_LIMITES["ylim"]); ax.set_zlim(_LIMITES["zlim"])
+def _apply_axes(ax):
+    ax.view_init(**_VIEW)
+    ax.set_xlim(_LIMS["xlim"]); ax.set_ylim(_LIMS["ylim"]); ax.set_zlim(_LIMS["zlim"])
     ax.set_xlabel("x_1"); ax.set_ylabel("x_2"); ax.set_zlabel("x_3")
 
 
-def fig_datos_entrada():
+def fig_input_data():
     X = make_data(d=3, k=2, N=200, seed=42, noise_std=0.05)
     fig = plt.figure(figsize=(5.5, 4.5))
     ax = fig.add_subplot(111, projection="3d")
     ax.scatter(X[0], X[1], X[2], s=10, alpha=0.65, c="tab:blue")
-    _aplicar_ejes(ax)
+    _apply_axes(ax)
     ax.set_title("Nube de N=200 puntos en R^3 (d=3, k=2)")
     plt.tight_layout()
     fig.savefig(os.path.join(FIGS, "input_3d.pdf"))
     plt.close(fig)
 
 
-def fig_convergencia_d3():
+def fig_convergence_d3():
     K = 2
     X = make_data(d=3, k=K, N=200, seed=42, noise_std=0.05)
     x0 = init_x0(d=3, k=K)
@@ -80,7 +80,7 @@ def fig_convergencia_d3():
     plt.close(fig)
 
 
-def fig_reconstruccion_d3():
+def fig_reconstruction_d3():
     K = 2
     X = make_data(d=3, k=K, N=200, seed=42, noise_std=0.05)
     x0 = init_x0(d=3, k=K)
@@ -106,16 +106,16 @@ def fig_reconstruccion_d3():
                 [X[2, i], Xhat[2, i]],
                 c="gray", lw=0.3, alpha=0.4)
 
-    rejilla_u = np.linspace(-2.5, 2.5, 12)
-    rejilla_v = np.linspace(-2.5, 2.5, 12)
-    U_, V_ = np.meshgrid(rejilla_u, rejilla_v)
-    plano = D @ np.stack([U_.ravel(), V_.ravel()], axis=0)
-    ax.plot_surface(plano[0].reshape(U_.shape),
-                    plano[1].reshape(U_.shape),
-                    plano[2].reshape(U_.shape),
+    grid_u = np.linspace(-2.5, 2.5, 12)
+    grid_v = np.linspace(-2.5, 2.5, 12)
+    U_, V_ = np.meshgrid(grid_u, grid_v)
+    plane3 = D @ np.stack([U_.ravel(), V_.ravel()], axis=0)
+    ax.plot_surface(plane3[0].reshape(U_.shape),
+                    plane3[1].reshape(U_.shape),
+                    plane3[2].reshape(U_.shape),
                     alpha=0.18, color="tab:green", edgecolor="none")
 
-    _aplicar_ejes(ax)
+    _apply_axes(ax)
     ax.set_title("Original X (azul) vs. reconstruccion X_hat (naranja)\n"
                  "Subespacio aprendido en verde")
     ax.legend(loc="upper left", fontsize=9)
@@ -124,7 +124,7 @@ def fig_reconstruccion_d3():
     plt.close(fig)
 
 
-def fig_escalamiento():
+def fig_scaling():
     rows = benchmark(ds=(3, 5, 10, 100), lbfgs_m=10, maxIter=500)
     ibfgs = [r for r in rows if r["mode"] == "ibfgs"]
     lbfgs = [r for r in rows if r["mode"] == "lbfgs"]
@@ -153,8 +153,8 @@ def fig_escalamiento():
 
 
 if __name__ == "__main__":
-    fig_datos_entrada()
-    fig_convergencia_d3()
-    fig_reconstruccion_d3()
-    fig_escalamiento()
+    fig_input_data()
+    fig_convergence_d3()
+    fig_reconstruction_d3()
+    fig_scaling()
     print(f"figuras guardadas en {FIGS}")
