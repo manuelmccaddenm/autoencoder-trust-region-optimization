@@ -1,16 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-lib_autoencoder.py
-Autoencoder lineal d -> k -> d  (k = dimension latente).
-
-Estado x en R^{2dk} = [vec(E); vec(D)] con E (k x d) y D (d x k).
-Forward:        Xhat = D E X.
-Perdida (MSE):  f(x) = (1/2N) || D E X - X ||_F^2.
-Gradientes analiticos (M = DEX - X):
-    grad_D f = (1/N) M (E X)^T
-    grad_E f = (1/N) D^T M X^T
-"""
-
 import numpy as np
 
 

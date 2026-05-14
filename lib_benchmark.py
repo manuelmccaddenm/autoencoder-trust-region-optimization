@@ -1,19 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-lib_benchmark.py
-Comparativa BFGS vs L-BFGS en autoencoder lineal d -> k -> d
-para una rejilla de dimensiones d.
-
-Reporta por cada (d, metodo):
-  - n        = 2*d*k = numero de parametros
-  - iter     = iteraciones realizadas
-  - tiempo   = segundos pared
-  - f(x*)    = perdida final
-  - f* PCA   = optimo teorico (cota inferior por SVD rango k)
-  - gap rel  = (f(x*) - f*) / f*
-  - mem(B)   = memoria del estado del Hessiano aproximado
-"""
-
 import time
 import numpy as np
 
@@ -23,7 +7,6 @@ from lib_trust_region import trust_region
 
 
 def pca_optimum(X: np.ndarray, k: int) -> float:
-    """f* = (1/2N) * sum_{i>k} sigma_i^2 (cota inferior PCA rango k)."""
     _, S, _ = np.linalg.svd(X, full_matrices=False)
     return 0.5 * float(np.sum(S[k:] ** 2)) / X.shape[1]
 
@@ -36,10 +19,9 @@ def init_x0(d: int, k: int, seed: int = 0, scale: float = 0.1) -> np.ndarray:
 
 
 def hessian_memory_floats(mode: str, n: int, m: int) -> int:
-    """Memoria persistente del estado del Hessiano aproximado (en floats)."""
     if mode == "ibfgs":
-        return n * n            # H explicita (n x n)
-    return 2 * m * n            # m pares (s, gamma) de tamano n
+        return n * n
+    return 2 * m * n
 
 
 def run_one(d: int, mode: str, lbfgs_m: int = 10, k: int = 2,

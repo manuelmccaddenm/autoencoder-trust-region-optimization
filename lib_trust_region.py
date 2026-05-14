@@ -1,20 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-lib_trust_region.py
-Bucle externo de Region de Confianza.
-
-Aproximacion de la inversa del Hessiano via dos variantes:
-  - hessian_mode = "ibfgs" : matriz H completa, actualizacion iBFGS (O(n^2))
-  - hessian_mode = "lbfgs" : memoria limitada, recursion de dos ciclos (O(mn))
-
-El subproblema se resuelve con Dogleg que no requiere B explicita: usa
-solo H g (via lib_ibfgs o lib_lbfgs.two_loop) e interpolacion cuadratica
-de f para el punto de Cauchy.
-
-Notacion del curso:
-  x_k, g_k, p_k, Delta_k, rho_k, s_k, gamma_k, m_k(d).
-"""
-
 import numpy as np
 
 from lib_dogleg import dogleg
@@ -35,10 +18,9 @@ def trust_region(
     hessian_mode: str = "ibfgs",
     lbfgs_m: int = 10,
 ):
-    assert 0.0 <= eta < 0.25, "eta debe estar en [0, 1/4)"
-    assert 0.0 < Delta0 < Delta_max, "Delta_0 debe estar en (0, Delta_max)"
-    assert hessian_mode in ("ibfgs", "lbfgs"), \
-        f"hessian_mode invalido: {hessian_mode!r}"
+    assert 0.0 <= eta < 0.25
+    assert 0.0 < Delta0 < Delta_max
+    assert hessian_mode in ("ibfgs", "lbfgs")
 
     n = len(x0)
     x_k = x0.copy()
@@ -57,33 +39,27 @@ def trust_region(
         def Hg_fn(v):
             return memory.two_loop(v)
 
-    Delta_min = 1e-14  # paro si la region de confianza colapso
+    Delta_min = 1e-14
 
     history = []
     k = 0
     while (np.linalg.norm(g_k, np.inf) > tol
            and k < maxIter
            and Delta_k > Delta_min):
-        # snapshot del radio que se usa en esta iteracion (el ajuste
-        # que sigue produce el Delta de la SIGUIENTE iteracion)
         Delta_used = Delta_k
 
-        # SPRC: subproblema por dogleg con H (no necesita B)
         p_k, pred = dogleg(g_k, Delta_k, Hg_fn, f, x_k, f_k_cached)
 
-        # rho_k = reduccion real / reduccion predicha
         f_kp = float(f(x_k + p_k))
         actual = f_k_cached - f_kp
         rho_k = actual / pred if pred != 0.0 else 0.0
 
-        # ajuste de la region de confianza
         p_norm = float(np.linalg.norm(p_k))
         if rho_k < 0.25:
             Delta_k = 0.25 * Delta_k
         elif rho_k > 0.75 and abs(p_norm - Delta_k) < 1e-10:
             Delta_k = min(2.0 * Delta_k, Delta_max)
 
-        # actualizacion del punto y del Hessiano aproximado
         if rho_k > eta:
             x_next = x_k + p_k
             g_next = grad_fn(x_next)

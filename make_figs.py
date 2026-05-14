@@ -1,16 +1,7 @@
-# -*- coding: utf-8 -*-
-"""
-Genera las figuras (PDF) usadas en docs/Reporte.tex.
-Salida: docs/figs/*.pdf
-"""
-
 import os
-import sys
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from lib_data import make_data
 from lib_autoencoder import loss, grad, pack, unpack, forward
@@ -21,8 +12,6 @@ FIGS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "figs")
 os.makedirs(FIGS, exist_ok=True)
 plt.rcParams.update({"font.size": 10, "figure.dpi": 130})
 
-# Vista 3D y rangos de ejes comunes a las figuras 1 y 2 para que los
-# mismos puntos se vean en las mismas posiciones (X es idéntica en ambas).
 _VIEW = dict(elev=22, azim=-60)
 _LIMS = dict(xlim=(-1.0, 1.0), ylim=(-2.5, 2.5), zlim=(-1.5, 1.5))
 
@@ -117,9 +106,6 @@ def fig_reconstruction_d3():
                 [X[2, i], Xhat[2, i]],
                 c="gray", lw=0.3, alpha=0.4)
 
-    # rejilla del plano restringida al rango de los datos para no
-    # estirar los ejes (asi los puntos azules quedan en la misma posicion
-    # y escala que en la fig. de input)
     grid_u = np.linspace(-2.5, 2.5, 12)
     grid_v = np.linspace(-2.5, 2.5, 12)
     U_, V_ = np.meshgrid(grid_u, grid_v)
@@ -171,4 +157,4 @@ if __name__ == "__main__":
     fig_convergence_d3()
     fig_reconstruction_d3()
     fig_scaling()
-    print("figuras generadas en", FIGS)
+    print(f"figures saved to {FIGS}")

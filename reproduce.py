@@ -1,15 +1,9 @@
-# -*- coding: utf-8 -*-
 """
-reproduce.py
-Reproduce todos los resultados del reporte en una sola corrida:
+Reproduces all results from the report.
 
-  1. Benchmark iBFGS vs L-BFGS (Tabla 1)         -- ~4 s
-  2. Figuras 1-4                                  -- ~3 s
-  3. Stress test, 5000 configuraciones aleatorias -- ~6 min
-
-Uso:
-  python reproduce.py            # corre todo
-  python reproduce.py fast       # omite stress test
+Usage:
+  python reproduce.py            # everything (~6 min)
+  python reproduce.py fast       # skip stress test (~10 s)
 """
 
 import subprocess
@@ -17,19 +11,17 @@ import sys
 import time
 
 
-def run(label, cmd):
-    print(f"\n{'='*60}")
-    print(f"  {label}")
-    print(f"{'='*60}")
+def run(label, script):
+    print(f"\n{'='*60}\n  {label}\n{'='*60}")
     t0 = time.perf_counter()
-    subprocess.run([sys.executable, cmd], check=True)
+    subprocess.run([sys.executable, script], check=True)
     print(f"  -> {label}: {time.perf_counter() - t0:.1f}s")
 
 
 if __name__ == "__main__":
     fast = "fast" in sys.argv[1:]
-    run("1. Benchmark (Tabla 1)", "main.py")
-    run("2. Figuras del reporte", "make_figs.py")
+    run("1. Benchmark", "main.py")
+    run("2. Figures", "make_figs.py")
     if not fast:
-        run("3. Stress test (5000 corridas)", "stress_test.py")
-    print("\nListo.")
+        run("3. Stress test (5000 runs)", "stress_test.py")
+    print("\nDone.")
