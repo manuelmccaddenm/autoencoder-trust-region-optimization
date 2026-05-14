@@ -8,5 +8,4 @@ venv/
 .vscode/
 *.egg-info/
 *.png
-figs/*.pdf
 autoencoder_3d.png

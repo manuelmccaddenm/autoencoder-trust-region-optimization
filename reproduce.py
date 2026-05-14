@@ -11,10 +11,10 @@ import sys
 import time
 
 
-def correr(etiqueta, script):
+def correr(etiqueta, script, *args):
     print(f"\n{'='*60}\n  {etiqueta}\n{'='*60}")
     t0 = time.perf_counter()
-    subprocess.run([sys.executable, script], check=True)
+    subprocess.run([sys.executable, script, *args], check=True)
     print(f"  -> {etiqueta}: {time.perf_counter() - t0:.1f}s")
 
 
@@ -23,5 +23,5 @@ if __name__ == "__main__":
     correr("1. Benchmark", "main.py")
     correr("2. Figuras", "make_figs.py")
     if not rapido:
-        correr("3. Stress test (5000 corridas)", "stress_test.py")
+        correr("3. Stress test (5000 corridas)", "stress_test.py", "5000")
     print("\nListo.")
