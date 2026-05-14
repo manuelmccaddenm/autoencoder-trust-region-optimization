@@ -12,8 +12,9 @@ def dogleg(g: np.ndarray, Delta: float, Hg_fn, f_fn, x_k: np.ndarray,
     g_sq = g_norm * g_norm
 
     t = min(1.0, Delta / g_norm)
-    # underflow guard: when Delta has shrunk near machine epsilon, t*t = 0
-    # and the parabola cannot be fit; take the boundary step in -g.
+    # guardia contra underflow: si Delta es tan chico que t*t pierde
+    # precision en float64, no se puede ajustar la parabola y se toma
+    # el paso al borde en -g.
     if t * t < 1e-300:
         scale = Delta / g_norm
         return -scale * g, Delta * g_norm
