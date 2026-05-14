@@ -1,9 +1,9 @@
 """
-Reproduces all results from the report.
+Reproduce todos los resultados del reporte.
 
-Usage:
-  python reproduce.py            # everything (~6 min)
-  python reproduce.py fast       # skip stress test (~10 s)
+Uso:
+  python reproduce.py            # todo (~6 min)
+  python reproduce.py fast       # sin stress test (~10 s)
 """
 
 import subprocess
@@ -11,17 +11,17 @@ import sys
 import time
 
 
-def run(label, script):
-    print(f"\n{'='*60}\n  {label}\n{'='*60}")
+def correr(etiqueta, script):
+    print(f"\n{'='*60}\n  {etiqueta}\n{'='*60}")
     t0 = time.perf_counter()
     subprocess.run([sys.executable, script], check=True)
-    print(f"  -> {label}: {time.perf_counter() - t0:.1f}s")
+    print(f"  -> {etiqueta}: {time.perf_counter() - t0:.1f}s")
 
 
 if __name__ == "__main__":
-    fast = "fast" in sys.argv[1:]
-    run("1. Benchmark", "main.py")
-    run("2. Figures", "make_figs.py")
-    if not fast:
-        run("3. Stress test (5000 runs)", "stress_test.py")
-    print("\nDone.")
+    rapido = "fast" in sys.argv[1:]
+    correr("1. Benchmark", "main.py")
+    correr("2. Figuras", "make_figs.py")
+    if not rapido:
+        correr("3. Stress test (5000 corridas)", "stress_test.py")
+    print("\nListo.")
